@@ -1,6 +1,6 @@
 <img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
-# te prompty mają być zrobione dla GitHub AI copilot i podaj mi plik MD
+# te prompty mają być zrobione dla GitHub AI copilot
 
 jakość promptów ma być 10/10 dla najnowszego kodu i software
 kompatybilne i wydajne 10/10 (10 to max)
