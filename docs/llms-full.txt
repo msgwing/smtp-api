@@ -1769,6 +1769,35 @@ deliverability for everyone else. If your use case needs more than what's
 documented here, ask at abuse@msgwing.com rather than assuming it isn't
 supported.
 
+## My account was suspended. How do I appeal?
+
+Write to **abuse@msgwing.com** **from the email address the account is
+registered to**. Requests sent from any other address are not processed.
+
+This is not a formality. "Please restore this account" is exactly what somebody
+who had taken over an account would write, and an appeal arriving from an
+unrelated address cannot be tied to the account holder. We also will not name
+the registered address in a reply, because that would disclose the account
+holder's email to whoever wrote in.
+
+If you no longer have access to the registered address, that is an account
+recovery question rather than an appeal, and it is handled separately.
+
+Two things worth knowing before writing:
+
+- Suspensions for third-party blocklist entries are not ours to reverse. Where
+  a domain is listed by an independent reputation service, delisting is
+  requested from that service, not from us.
+- On shared or low-cost web hosting, such a listing is often caused by another
+  customer on the same platform rather than by your own site. That case is
+  recoverable, but it has to be resolved with the service that published the
+  listing.
+
+If the site you are sending for is unrelated to the suspended account, you are
+free to register a new account. The [sending limits](#what-are-the-sending-limits)
+and the generated `@msgwing.com` sender address apply as usual, as do the same
+abuse rules.
+
 ## Can you share details about your infrastructure or how deliverability is maintained?
 
 No — see the [Security Policy](https://github.com/msgwing/ZeroSMTP/blob/main/SECURITY.md#infrastructure-and-third-party-integration-inquiries)
