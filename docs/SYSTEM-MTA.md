@@ -76,6 +76,61 @@ echo "Test from Postfix satellite" | mail -s "ZeroSMTP test" you@example.com
 tail -f /var/log/mail.log
 ```
 
+## Making mail leave as your account (sender rewriting)
+
+**Do this before you test.** Without it, Postfix satellite mode sends system
+mail as the local user — `root@yourhost`, `pi@raspberrypi` — and the relay
+refuses it:
+
+```
+553 5.7.1 <root@yourhost>: Sender address rejected: not owned by user
+```
+
+That is not an authentication problem; the login succeeded. Mail has to leave
+as the account it was sent with, and `cron`, `logwatch`, `unattended-upgrades`,
+`systemd` failure mail and `mdadm` all use the local system sender instead.
+
+Two maps are needed, because the envelope sender and the visible `From:` header
+are separate things and the relay checks the first one:
+
+```bash
+sudo tee /etc/postfix/sender_canonical > /dev/null <<'EOF'
+/.+/    your-username@msgwing.com
+EOF
+sudo tee /etc/postfix/header_from > /dev/null <<'EOF'
+/^From:.*/  REPLACE From: your-username@msgwing.com
+EOF
+sudo postmap /etc/postfix/sender_canonical
+```
+
+`header_from` is deliberately **not** run through `postmap` — `regexp:` and
+`pcre:` tables are read as plain text and have no `.db` to build.
+
+Add to `/etc/postfix/main.cf`:
+
+```ini
+sender_canonical_classes = envelope_sender, header_sender
+sender_canonical_maps = regexp:/etc/postfix/sender_canonical
+smtp_header_checks = regexp:/etc/postfix/header_from
+```
+
+Then `sudo systemctl restart postfix`.
+
+Where do replies go? Not to the relay account — set `Reply-To` in whatever
+generates the mail, or simply read the mailbox of the address you configured.
+The `Reply-To` header is not restricted; only the sender is.
+
+Verify the rewrite actually happened, rather than that the command ran:
+
+```bash
+echo test | mail -s "sender test" you@example.com
+grep "from=<" /var/log/mail.log | tail -1
+```
+
+The `from=<...>` on that line has to be your `@msgwing.com` address. If it
+still shows `root@`, the maps are not being applied — check
+`postconf sender_canonical_maps` reads back what you wrote.
+
 ## Alternative: msmtp (simplest option, no mail queue)
 
 Good if you don't want a full MTA — just a way for `cron`/scripts to send

@@ -110,6 +110,41 @@ none of the server's text at all.
 Three of the four causes are still reversible before the deadline, so somebody
 telling you to migrate today may be wrong. Check which case you are in first.
 
+## `553 5.7.1 ... Sender address rejected: not owned by user`
+
+The full refusal looks like this:
+
+```
+553 5.7.1 <root@yourhost>: Sender address rejected: not owned by user
+you@msgwing.com
+```
+
+**Authentication succeeded.** The password is right and the account is fine.
+What was refused is the *From* address: you logged in as one account and then
+asked to send as somebody else. A shared relay cannot allow that — if it did,
+anyone with an account could send as anyone.
+
+Mail must leave as the account it was sent with. Nothing else is accepted, and
+this cannot be configured per account.
+
+### Where it usually comes from
+
+Almost never from an application you wrote. Two situations produce nearly all
+of these:
+
+**A Linux host sending its own system mail.** `cron`, `logwatch`,
+`unattended-upgrades`, `systemd` failure notifications and `mdadm` all send as
+the local system user — `root@yourhost`, `pi@raspberrypi`, `backup@nas`. Postfix
+in satellite mode passes that straight through unless it is told to rewrite it.
+See [rewriting the sender in the system MTA guide](SYSTEM-MTA.md#making-mail-leave-as-your-account-sender-rewriting),
+which is the fix.
+
+**A device or client set to "use my real email as the From address."** Printers,
+scanners, NAS boxes and DVRs often have a *From* or *Sender* field separate from
+the login. Put the `@msgwing.com` account address in it, not a personal Gmail,
+Outlook or company address. That personal address is what receives the replies —
+which is what the `Reply-To` field is for, and that one is unrestricted.
+
 ## Certificate / TLS verification failed
 
 > On a printer or scanner this is usually the frozen root store rather than
